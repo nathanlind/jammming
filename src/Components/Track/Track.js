@@ -1,12 +1,13 @@
 import React from 'react';
+import './Track.css';
 
 class Track extends React.Component {
 
   renderAction() {
     if (isRemoval) {
-      <a class="Track-action">'-'</a>
+      return <a className="Track-action">'-'</a>
     } else {
-      <a class="track-action">'+'</a>
+      return <a className="track-action">'+'</a>
     }
   }
 
