@@ -10,6 +10,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.addTrack = this.addTrack.bind(this);
+    this.removeTrack = this.removeTrack.bind(this);
     this.state = {
       searchResults: [
         {name: 'Gaucho'},
@@ -27,9 +28,14 @@ class App extends Component {
 
   addTrack(track) {
     if (this.state.playlistTracks.includes(track.id)) {
-      let newTracks = this.state.playlistTracks.concat(track);
-      this.setState({ playlistTracks: newTracks});
+      let updatedTracks = this.state.playlistTracks.concat(track);
+      this.setState({ playlistTracks: updatedTracks});
     }
+  }
+
+  removeTrack(track) {
+    let updatedTracks = this.state.playlistTracks.filter(track);
+    this.setState({ playlistTrack: updatedTracks});
   }
 
   render() {
@@ -40,7 +46,7 @@ class App extends Component {
             <SearchBar />
             <div className="App-playlist">
               <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
-              <PlayList playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
+              <PlayList playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} onRemove={this.removeTrack} />
             </div>
           </div>
       </div>
