@@ -2,6 +2,10 @@ import React from 'react';
 import './Track.css';
 
 class Track extends React.Component {
+  constructor(props) {
+    super(props);
+    this.renderAction = this.renderAction.bind(this);
+  }
 
   renderAction() {
     if (isRemoval) {
