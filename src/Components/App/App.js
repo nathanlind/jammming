@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
-import '../SearchBar/SearchBar';
-import '../SearchResults/SearchResults';
-import '../PlayList/PlayList';
+import SearchBar from '../SearchBar/SearchBar';
+import SearchResults from '../SearchResults/SearchResults';
+import PlayList from '../PlayList/PlayList';
 
 class App extends Component {
   constructor(props) {
