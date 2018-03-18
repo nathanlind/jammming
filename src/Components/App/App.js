@@ -14,47 +14,41 @@ class App extends React.Component {
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
     this.state = {
-      searchResults: [{
-        name: 'Peg',
-        artist: 'Steely Dan',
-        album: 'Aja',
-        id: 12345
-      }],
-      playlistName: 'Steely Dan Test Playlist',
-      playlistTracks: [{
-        name: 'Peg',
-        artist: 'Steely Dan',
-        album: 'Aja',
-        id: 12345
-      }]
+      searchResults: [],
+      playlistName: 'New Playlist',
+      playlistTracks: []
     };
   }
 
 // Half way works.  Still allowing dupes.
   addTrack(track) {
     if (track.name !== this.state.playlistTracks.name) {
-      this.setState({ playlistTracks: this.state.playlistTracks.concat(track)});
+      this.setState({ playlistTracks: this.state.playlistTracks.concat(track) });
     }
   }
 
 // Not yet working.
   removeTrack(track) {
     const updatedTracks = this.state.playlistTracks.filter(tracks => tracks !== track);
-    this.setState({ playlistTrack: updatedTracks});
+    this.setState({ playlistTrack: updatedTracks });
   }
 
   updatePlaylistName(name) {
-    this.setState({playlistName: name});
+    this.setState({ playlistName: name });
   }
 
 // Step 63
   savePlaylist() {
+    let trackURIs = [];
     for (let trackIndex = 0; trackIndex < this.state.playlistTracks.length; trackIndex++) {
-      let trackURIs = this.state.playlistTrack.uri.push();
+      trackURIs = this.state.playlistTrack.uri.push();
     }
+    Spotify.savePlaylist(this.state.playlistName, trackURIs);
+    this.setState({ playlistName: 'New Playlist', searchResults: [] });
   }
 
   search(term) {
+    Spotify.getAccessToken()
     Spotify.search(term).then(tracks => {
       this.setState({searchResults: tracks});
     });
