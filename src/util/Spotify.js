@@ -21,7 +21,7 @@ const Spotify = {
   search(term) {
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
+        'Authorization': `Bearer ${accessToken}`
       }
     }).then(response => {
       if (response.ok) {
@@ -48,23 +48,28 @@ const Spotify = {
     if (!playlistName || !trackURIs) {
       return;
     } else {
+
       const userAccessToken = accessToken;
-      const headers = { headers: {Authorization: `Bearer ${userAccessToken}`} };
       let userID = '';
       let playlistID = '';
-      fetch(`https://api.spotify.com/v1/me`, headers).then(response => {
+
+      fetch(`https://api.spotify.com/v1/me`, {
+        headers: { Authorization: `Bearer ${userAccessToken}` }
+      }).then(response => {
         if (response.ok) {
           return response.json();
         }
         throw new Error(`Request failed!`);
       }, networkError => console.log(networkError.message)
       ).then(jsonResponse => {
-        userID = jsonResponse.id
-      }).then(fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+        userID = jsonResponse.id;
+      });
+
+      fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
         method: 'POST',
         headers: {
-          "Authorization": `Bearer ${userAccessToken}`,
-          "Content-type": "application/json"
+          Authorization: `Bearer ${userAccessToken}`,
+          'Content-type': 'application/json'
         },
         body: JSON.stringify({name: playlistName})
       }).then(response => {
@@ -75,11 +80,13 @@ const Spotify = {
       }, networkError => console.log(networkError.message)
     ).then(jsonResponse => {
       playlistID = jsonResponse.id;
-    })).then(fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
+    });
+
+      fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
       method: 'POST',
       headers: {
-        "Authorization": `Bearer ${userAccessToken}`,
-        "Content-type": "application/json"
+        Authorization: `Bearer ${userAccessToken}`,
+        'Content-type': "application/json"
       },
       body: JSON.stringify({tracks: trackURIs})
     }).then(response => {
@@ -90,7 +97,7 @@ const Spotify = {
       }, networkError => console.log(networkError.message)
     ).then(jsonResponse => {
       playlistID = jsonResponse.id;
-    }));
+    });
     }
   }
 };
