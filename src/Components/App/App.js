@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
-import PlayList from '../Playlist/PlayList';
+import PlayList from '../PlayList/PlayList';
 import Spotify from '../../util/Spotify';
 
 class App extends React.Component {
@@ -22,16 +22,16 @@ class App extends React.Component {
 
 // Half way works.  Still allowing dupes.
   addTrack(track) {
-    if (track.name !== this.state.playlistTracks.name) {
-      this.setState({ playlistTracks: this.state.playlistTracks.concat(track) });
-    }
+    let updatedTracks = this.state.playlistTracks;
+    updatedTracks.push(track);
+    this.setState({playlistTracks: updatedTracks});
   }
 
 // Not yet working.
   removeTrack(track) {
     let updatedTracks = this.state.playlistTracks;
     updatedTracks = updatedTracks.filter(tracks => tracks.id !== track.id);
-    this.setState({ playlistTrack: updatedTracks });
+    this.setState({ playlistTracks: updatedTracks });
   }
 
   updatePlaylistName(name) {
@@ -45,11 +45,10 @@ class App extends React.Component {
       trackURIs.push(this.state.playlistTracks[trackIndex].URI);
     }
     Spotify.savePlaylist(this.state.playlistName, trackURIs);
-    this.setState({ playlistName: 'New Playlist', searchResults: [] });
+    this.setState({ playlistName: 'New Playlist', playlistTracks: [] });
   }
 
   search(term) {
-    Spotify.getAccessToken()
     Spotify.search(term).then(tracks => {
       this.setState({searchResults: tracks});
     });

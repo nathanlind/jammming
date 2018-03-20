@@ -1,7 +1,7 @@
 const clientId = "3a5a9ff1fc374ab78f2fd53fb15b8241";
 const redirectURI = "http://localhost:3000/";
-let accessToken = '';
-let expiresIn = '';
+let accessToken;
+let expiresIn;
 
 const Spotify = {
 
@@ -19,6 +19,7 @@ const Spotify = {
   },
 
   search(term) {
+    const accessToken = Spotify.getAccessToken();
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
@@ -49,12 +50,13 @@ const Spotify = {
       return;
     } else {
 
-      const userAccessToken = accessToken;
-      let userID = '';
-      let playlistID = '';
+      const accessToken = Spotify.getAccessToken();
+      const headers = { Authorization: `Bearer ${accessToken}` };
+      let userID;
+      let playlistID;
 
       return fetch(`https://api.spotify.com/v1/me`, {
-        headers: { Authorization: `Bearer ${userAccessToken}` }
+        headers: headers,
       }).then(response => {
         if (response.ok) {
           return response.json();
@@ -65,11 +67,8 @@ const Spotify = {
         userID = jsonResponse.id;
 
           return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+            headers: headers,
             method: 'POST',
-            headers: {
-              Authorization: `Bearer ${userAccessToken}`,
-              'Content-type': 'application/json'
-            },
             body: JSON.stringify({name: playlistName})
           }).then(response => {
             if (response.ok) {
@@ -81,20 +80,10 @@ const Spotify = {
           playlistID = jsonResponse.id;
 
             return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
+            headers: headers,
             method: 'POST',
-            headers: {
-              Authorization: `Bearer ${userAccessToken}`,
-              'Scopes': 'playlist-modify-public playlist-modify-private',
-              'Content-type': 'application/json'
-            },
-            body: {uris: trackURIs}
-          }).then(response => {
-              if (response.ok) {
-                return response.json();
-              }
-              throw new Error('Request failed!');
-            }, networkError => console.log(networkError.message)
-          );
+            body: JSON.stringify({uris: trackURIs})
+          });
         });
       });
     }
