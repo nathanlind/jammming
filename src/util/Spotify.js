@@ -14,7 +14,7 @@ const Spotify = {
       window.setTimeout(() => accessToken = '', expiresIn * 1000);
       window.history.pushState('Access Token', null, '/');
     } else {
-      window.location = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectURI}`;
+      window.location = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public%20playlist-modify-private&redirect_uri=${redirectURI}`;
     }
   },
 
@@ -53,7 +53,7 @@ const Spotify = {
       let userID = '';
       let playlistID = '';
 
-      fetch(`https://api.spotify.com/v1/me`, {
+      return fetch(`https://api.spotify.com/v1/me`, {
         headers: { Authorization: `Bearer ${userAccessToken}` }
       }).then(response => {
         if (response.ok) {
@@ -63,41 +63,40 @@ const Spotify = {
       }, networkError => console.log(networkError.message)
       ).then(jsonResponse => {
         userID = jsonResponse.id;
+
+          return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${userAccessToken}`,
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify({name: playlistName})
+          }).then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Request failed!');
+          }, networkError => console.log(networkError.message)
+        ).then(jsonResponse => {
+          playlistID = jsonResponse.id;
+
+            return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${userAccessToken}`,
+              'Scopes': 'playlist-modify-public playlist-modify-private',
+              'Content-type': 'application/json'
+            },
+            body: {uris: trackURIs}
+          }).then(response => {
+              if (response.ok) {
+                return response.json();
+              }
+              throw new Error('Request failed!');
+            }, networkError => console.log(networkError.message)
+          );
+        });
       });
-
-      fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${userAccessToken}`,
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify({name: playlistName})
-      }).then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Request failed!');
-      }, networkError => console.log(networkError.message)
-    ).then(jsonResponse => {
-      playlistID = jsonResponse.id;
-    });
-
-      fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${userAccessToken}`,
-        'Content-type': "application/json"
-      },
-      body: JSON.stringify({tracks: trackURIs})
-    }).then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Request failed!');
-      }, networkError => console.log(networkError.message)
-    ).then(jsonResponse => {
-      playlistID = jsonResponse.id;
-    });
     }
   }
 };
