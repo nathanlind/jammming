@@ -1,5 +1,5 @@
 const clientId = "3a5a9ff1fc374ab78f2fd53fb15b8241";
-const redirectURI = "http://localhost:3000/";
+const redirectURI = "https://nlinds-jammming.surge.sh";
 let accessToken = '';
 let expiresIn = '';
 
