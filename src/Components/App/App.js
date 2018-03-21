@@ -20,14 +20,20 @@ class App extends React.Component {
     };
   }
 
-// Half way works.  Still allowing dupes.
-  addTrack(track) {
-    let updatedTracks = this.state.playlistTracks;
-    updatedTracks.push(track);
-    this.setState({playlistTracks: updatedTracks});
+  addTrack(track) {  // Checks to see if track is already in playlist before adding it.
+    let inPlaylist = false;
+    this.state.playlistTracks.forEach(currentTrack => {
+      if (currentTrack.id === track.id) {
+        inPlaylist = true;
+      }
+    })
+    if (!inPlaylist) {
+      let updatedTracks = this.state.playlistTracks;
+      updatedTracks.push(track);
+      this.setState({playlistTracks: updatedTracks});
+    }
   }
 
-// Not yet working.
   removeTrack(track) {
     let updatedTracks = this.state.playlistTracks;
     updatedTracks = updatedTracks.filter(tracks => tracks.id !== track.id);
@@ -38,7 +44,6 @@ class App extends React.Component {
     this.setState({ playlistName: name });
   }
 
-// Step 63
   savePlaylist() {
     let trackURIs = [];
     for (let trackIndex = 0; trackIndex < this.state.playlistTracks.length; trackIndex++) {
@@ -49,6 +54,7 @@ class App extends React.Component {
   }
 
   search(term) {
+    Spotify.getAccessToken();
     Spotify.search(term).then(tracks => {
       this.setState({searchResults: tracks});
     });
@@ -65,7 +71,6 @@ class App extends React.Component {
                 searchResults={this.state.searchResults}
                 onAdd={this.addTrack} />
               <PlayList
-                playlistName={this.state.playlistName}
                 playlistTracks={this.state.playlistTracks}
                 onRemove={this.removeTrack}
                 onNameChange={this.updatePlaylistName}

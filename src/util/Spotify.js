@@ -1,11 +1,11 @@
 const clientId = "3a5a9ff1fc374ab78f2fd53fb15b8241";
 const redirectURI = "http://localhost:3000/";
-let accessToken;
-let expiresIn;
+let accessToken = '';
+let expiresIn = '';
 
 const Spotify = {
 
-  getAccessToken() {
+  getAccessToken() {  //Gets user access token from Spotify API according to Implicit Grant Flow
     if (accessToken) {
       return accessToken;
     } else if (window.location.href.match(/access_token=([^&]*)/) && window.location.href.match(/expires_in=([^&]*)/)) {
@@ -19,7 +19,6 @@ const Spotify = {
   },
 
   search(term) {
-    const accessToken = Spotify.getAccessToken();
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
@@ -50,12 +49,11 @@ const Spotify = {
       return;
     } else {
 
-      const accessToken = Spotify.getAccessToken();
       const headers = { Authorization: `Bearer ${accessToken}` };
       let userID;
       let playlistID;
 
-      return fetch(`https://api.spotify.com/v1/me`, {
+      return fetch(`https://api.spotify.com/v1/me`, {  // Gets current user's user ID from Spotify.
         headers: headers,
       }).then(response => {
         if (response.ok) {
@@ -66,7 +64,7 @@ const Spotify = {
       ).then(jsonResponse => {
         userID = jsonResponse.id;
 
-          return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
+          return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {  // Creates a new, empty playlist and returns the playlist ID.
             headers: headers,
             method: 'POST',
             body: JSON.stringify({name: playlistName})
@@ -79,7 +77,7 @@ const Spotify = {
         ).then(jsonResponse => {
           playlistID = jsonResponse.id;
 
-            return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {
+            return fetch(`https://api.spotify.com/v1/users/${userID}/playlists/${playlistID}/tracks`, {  // Adds tracks to the new playlist using it's ID.
             headers: headers,
             method: 'POST',
             body: JSON.stringify({uris: trackURIs})
